@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Plus, Calculator, Info, Moon, Sun } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Plus, Calculator, Info, Moon, Sun, RotateCcw } from 'lucide-react';
 import { Panel } from './components/Panel';
 import { GuideStickman } from './components/GuideStickman';
 import { PanelData } from './types';
@@ -12,6 +12,11 @@ const App: React.FC = () => {
   const [panels, setPanels] = useState<PanelData[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  
+  // UI Scaling State
+  const [uiScale, setUiScale] = useState(1);
+  const [showScaleMenu, setShowScaleMenu] = useState(false);
+  const scaleMenuRef = useRef<HTMLDivElement>(null);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -57,6 +62,22 @@ const App: React.FC = () => {
     }
   }, [isDark]);
 
+  // Close scale menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (scaleMenuRef.current && !scaleMenuRef.current.contains(event.target as Node)) {
+        setShowScaleMenu(false);
+      }
+    };
+
+    if (showScaleMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showScaleMenu]);
+
   const toggleTheme = () => setIsDark(!isDark);
 
   const initializeDefault = () => {
@@ -65,7 +86,8 @@ const App: React.FC = () => {
       name: 'General Rates',
       rows: [
         { id: generateId(), basicRate: 100, discount: 10, taxPercent: 5, commission: 2, freight: 5 }
-      ]
+      ],
+      commissionSettings: { rate1: 1.5, rate2: 12 }
     };
     setPanels([defaultPanel]);
   };
@@ -74,7 +96,8 @@ const App: React.FC = () => {
     const newPanel: PanelData = {
       id: generateId(),
       name: `New Panel ${panels.length + 1}`,
-      rows: []
+      rows: [],
+      commissionSettings: { rate1: 1.5, rate2: 12 }
     };
     setPanels([...panels, newPanel]);
   };
@@ -98,12 +121,62 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="bg-indigo-600 p-2 rounded-lg text-white">
-                <Calculator size={24} />
+              {/* Resolution / Scale Settings Button */}
+              <div className="relative" ref={scaleMenuRef}>
+                <button 
+                  onClick={() => setShowScaleMenu(!showScaleMenu)}
+                  className="bg-indigo-600 p-2 rounded-lg text-white hover:bg-indigo-700 transition-colors shadow-sm active:scale-95"
+                  title="Adjust UI Resolution"
+                >
+                  <Calculator size={24} />
+                </button>
+                
+                {/* Scale Slider Dropdown */}
+                {showScaleMenu && (
+                  <div className="absolute top-full left-0 mt-3 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-4 z-50 animate-in fade-in zoom-in-95 duration-200 origin-top-left">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-800 dark:text-white text-sm">App Resolution</span>
+                      </div>
+                      <span className="text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 px-2 py-1 rounded">
+                        {Math.round(uiScale * 100)}%
+                      </span>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <input 
+                        type="range" 
+                        min="0.5" 
+                        max="1.2" 
+                        step="0.05"
+                        value={uiScale}
+                        onChange={(e) => setUiScale(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                      />
+                      <div className="flex justify-between text-[10px] text-slate-400 font-medium mt-2 px-0.5">
+                        <span>Small (50%)</span>
+                        <span>Normal (100%)</span>
+                        <span>Large (120%)</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setUiScale(1)}
+                      className="w-full flex items-center justify-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 py-2 rounded-lg transition-colors"
+                    >
+                      <RotateCcw size={12} />
+                      Reset to Default
+                    </button>
+                  </div>
+                )}
               </div>
+
               <div>
-                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 hidden sm:block">
                   RateCalculator Pro
+                </h1>
+                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 sm:hidden">
+                  RCP
                 </h1>
               </div>
             </div>
@@ -120,7 +193,7 @@ const App: React.FC = () => {
                 className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg active:scale-95"
               >
                 <Plus size={18} />
-                New Panel
+                <span className="hidden sm:inline">New Panel</span>
               </button>
             </div>
           </div>
@@ -128,7 +201,10 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-all duration-200 ease-out origin-top-center"
+        style={{ zoom: uiScale }} 
+      >
         
         {/* Info Banner */}
         <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 flex items-start gap-3 text-sm text-blue-700 dark:text-blue-300 no-print">
