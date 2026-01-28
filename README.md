@@ -82,8 +82,8 @@ To run this project locally, you need [Node.js](https://nodejs.org/) installed.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/rate-calculator-pro.git
-   cd rate-calculator-pro
+   git clone https://github.com/yourusername/rate-calculator-pro.git](https://github.com/waleedabdullah415-ai/Rate-Caluculator.git
+   cd Rate-Calculator
    ```
 
 2. **Install dependencies**
