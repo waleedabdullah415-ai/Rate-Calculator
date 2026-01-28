@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RateCalculator Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'float': 'float 3s ease-in-out infinite',
+              'wave-arm': 'wave 2s ease-in-out infinite',
+              'wave-flag': 'waveFlag 3s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              wave: {
+                '0%, 100%': { transform: 'rotate(0deg)' },
+                '50%': { transform: 'rotate(-15deg)' },
+              },
+              waveFlag: {
+                '0%, 100%': { transform: 'rotate(0deg)' },
+                '50%': { transform: 'rotate(5deg)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Hide number input spinners for cleaner look */
+      input[type=number]::-webkit-inner-spin-button, 
+      input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+      }
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
+
+      /* Print styles for "Plain Excel Table Form" */
+      @media print {
+        @page {
+          margin: 1cm;
+          size: auto;
+        }
+
+        /* Global Print Resets - Enforce Square Corners & Box Sizing */
+        *, *::before, *::after {
+          text-shadow: none !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          box-sizing: border-box !important;
+        }
+
+        body {
+          background-color: white !important;
+          color: black !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        .no-print {
+          display: none !important;
+        }
+        .print-only {
+          display: block !important;
+        }
+        
+        /* Reset containers for print */
+        #root, main, .min-h-screen, .panel-container {
+          background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          max-width: none !important;
+          width: 100% !important;
+          border: none !important;
+        }
+
+        /* Target the specific panel being printed */
+        .panel-to-print {
+          border: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          display: block !important;
+          background-color: white !important;
+          color: black !important;
+          overflow: visible !important;
+        }
+
+        /* Prevent clipping of the right border by resetting the overflow wrapper */
+        .overflow-x-auto {
+          overflow: visible !important;
+          display: block !important;
+          width: auto !important;
+        }
+
+        /* Header styling - Centered Title */
+        .panel-header-print {
+          background-color: white !important;
+          border: none !important;
+          padding: 10px 0 10px 0 !important;
+          margin-bottom: 5px !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+        }
+
+        .panel-header-print input {
+          text-align: center !important;
+          font-size: 24px !important;
+          font-weight: bold !important;
+          width: 100% !important;
+          border: none !important;
+          color: black !important;
+          background: transparent !important;
+        }
+
+        /* Force table borders like Excel */
+        table {
+          border-collapse: collapse !important;
+          width: 99.5% !important; /* Slightly reduced width prevents right-border clipping */
+          margin: 0 auto !important; /* Center the table */
+          border: 2px solid black !important;
+          border-right: 2px solid black !important; /* Explicitly enforce right border */
+          font-size: 11px !important;
+          background-color: white !important;
+        }
+
+        /* Header Row */
+        thead th {
+          background-color: #1f2937 !important; /* Dark Grey #1f2937 */
+          color: white !important;
+          border: 1px solid black !important;
+          padding: 4px 2px !important; /* Reduced padding */
+          text-align: center !important;
+          font-weight: bold !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        
+        thead th button, thead th svg {
+          display: none !important;
+        }
+
+        /* Ensure flex containers in headers (Tax/Commission) are properly centered */
+        thead th div {
+          justify-content: center !important;
+          width: 100% !important;
+        }
+
+        /* Data Cells */
+        td {
+          border: 1px solid black !important;
+          color: black !important;
+          padding: 3px 2px !important; /* Reduced padding */
+        }
+
+        /* Alternating Row Colors: Dark Grey and Grey */
+        tbody tr {
+           background-color: white !important;
+        }
+        tbody tr:nth-child(odd) {
+          background-color: #e6e6e6 !important; /* Light Grey */
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        tbody tr:nth-child(even) {
+          background-color: #bfbfbf !important; /* Darker Grey */
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        /* Inputs - Center aligned */
+        td input {
+          border: none !important;
+          background: transparent !important;
+          font-family: 'Inter', sans-serif !important;
+          font-size: inherit !important;
+          color: black !important;
+          padding: 0 2px !important;
+          width: 100% !important;
+          font-weight: 500 !important;
+          text-align: center !important;
+        }
+
+        /* Result Cell Styling */
+        td.result-cell {
+          font-weight: bold !important;
+          background-color: transparent !important; /* Respect row background */
+          color: black !important;
+          text-align: center !important;
+          border-right: 2px solid black !important; /* Ensure the visual end of the table has a strong border */
+        }
+        
+        /* Hide all other panels when printing one */
+        body.printing-single .panel-container:not(.current-print) {
+          display: none !important;
+        }
+        
+        /* Show percentage symbols clearly in print */
+        .tax-symbol-print {
+          display: inline !important;
+          margin-left: 2px;
+          color: black !important;
+        } 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

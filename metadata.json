@@ -1,0 +1,5 @@
+{
+  "name": "RateCalculator Pro",
+  "description": "A multi-panel calculation tool that persists data. Manage tables of rates, discounts, tax, commission, and freight with automatic result computation.",
+  "requestFramePermissions": []
+}
