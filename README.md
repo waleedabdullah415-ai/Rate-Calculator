@@ -1,5 +1,5 @@
 
-![RateCalculator Pro Banner](https://github.com/waleedabdullah415-ai/Rate-Caluculator/blob/main/banner.png)
+![RateCalculator Pro Banner](YOUR_IMAGE_LINK_HERE)
 
 <div align="center">
 
@@ -82,8 +82,8 @@ To run this project locally, you need [Node.js](https://nodejs.org/) installed.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/rate-calculator-pro.git](https://github.com/waleedabdullah415-ai/Rate-Caluculator.git
-   cd Rate-Calculator
+   git clone https://github.com/yourusername/rate-calculator-pro.git
+   cd rate-calculator-pro
    ```
 
 2. **Install dependencies**

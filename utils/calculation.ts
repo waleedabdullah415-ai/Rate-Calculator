@@ -14,7 +14,7 @@ export const generateId = (): string => {
   });
 };
 
-export const calculateCommissionFromRates = (basic: number | '', discount: number | '', r1: number, r2: number): number => {
+export const calculateCommissionFromRates = (basic: number | '', discount: number | '', r1: number, r2: number): number | string => {
     const b = Number(basic) || 0;
     const d = Number(discount) || 0;
     
@@ -28,7 +28,14 @@ export const calculateCommissionFromRates = (basic: number | '', discount: numbe
     // Formula logic: step1 - (step1 * 12%) = step1 * (1 - 0.12)
     const final = step1 * (1 - (r2 / 100));
     
-    return Number(final.toFixed(2));
+    // Logic: Show at least 4 decimal points unless it is a perfect integer (1, 3, 5, etc)
+    const roundedCheck = Number(final.toFixed(4));
+    
+    if (Number.isInteger(roundedCheck)) {
+        return roundedCheck;
+    }
+    
+    return final.toFixed(4);
 };
 
 // Formula: basic-rate - Discount * Tax% - commission + freight = result

@@ -3,7 +3,7 @@ export interface RowData {
   basicRate: number | '';
   discount: number | '';
   taxPercent: number | '';
-  commission: number | '';
+  commission: number | string;
   freight: number | '';
 }
 

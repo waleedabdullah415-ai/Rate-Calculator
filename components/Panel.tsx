@@ -34,7 +34,7 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
     onUpdatePanel(panel.id, { ...panel, rows: [...panel.rows, newRow] });
   };
 
-  const updateRow = (rowId: string, field: keyof RowData, value: number | '') => {
+  const updateRow = (rowId: string, field: keyof RowData, value: number | string) => {
     const currentSettings = panel.commissionSettings || { rate1: 1.5, rate2: 12 };
     
     const updatedRows = panel.rows.map(row => {
@@ -44,8 +44,8 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
         // Auto-calc commission if Basic or Discount changes
         if (field === 'basicRate' || field === 'discount') {
              const autoComm = calculateCommissionFromRates(
-                 field === 'basicRate' ? (value as number) : (newRow.basicRate as number | ''),
-                 field === 'discount' ? (value as number) : (newRow.discount as number | ''),
+                 field === 'basicRate' ? (value as number) : (Number(newRow.basicRate) || ''),
+                 field === 'discount' ? (value as number) : (Number(newRow.discount) || ''),
                  currentSettings.rate1,
                  currentSettings.rate2
              );
@@ -306,7 +306,7 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
                     type="number"
                     value={row.commission}
                     onKeyDown={handleKeyDown}
-                    onChange={(e) => updateRow(row.id, 'commission', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    onChange={(e) => updateRow(row.id, 'commission', e.target.value)}
                     placeholder="Auto"
                     className="w-full px-2 py-1 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 outline-none transition-all bg-transparent dark:text-slate-200 placeholder-slate-300 dark:placeholder-slate-600"
                   />
