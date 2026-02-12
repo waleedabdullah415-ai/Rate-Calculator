@@ -1,5 +1,5 @@
 
-![RateCalculator Pro Banner](YOUR_IMAGE_LINK_HERE)
+![RateCalculator Pro Banner](https://github.com/waleedabdullah415-ai/Rate-Calculator/blob/main/banner.png)
 
 <div align="center">
 
