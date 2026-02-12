@@ -18,14 +18,25 @@
               sans: ['Inter', 'sans-serif'],
             },
             animation: {
-              'float': 'float 3s ease-in-out infinite',
+              'march': 'march 25s linear infinite',
+              'leg': 'legSwing 0.5s ease-in-out infinite alternate',
+              'leg-delayed': 'legSwing 0.5s ease-in-out infinite alternate -0.5s',
+              'bob': 'bob 0.25s ease-in-out infinite alternate',
               'wave-arm': 'wave 2s ease-in-out infinite',
               'wave-flag': 'waveFlag 3s ease-in-out infinite',
             },
             keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-10px)' },
+              march: {
+                '0%': { transform: 'translateX(100vw)' },
+                '100%': { transform: 'translateX(-120px)' },
+              },
+              legSwing: {
+                '0%': { transform: 'rotate(-25deg)' },
+                '100%': { transform: 'rotate(25deg)' },
+              },
+              bob: {
+                '0%': { transform: 'translateY(0)' },
+                '100%': { transform: 'translateY(-3px)' },
               },
               wave: {
                 '0%, 100%': { transform: 'rotate(0deg)' },
@@ -49,6 +60,11 @@
       }
       input[type=number] {
         -moz-appearance: textfield;
+      }
+
+      /* Pause animation on hover for interactivity */
+      .pause-on-hover:hover, .pause-on-hover:hover * {
+        animation-play-state: paused !important;
       }
 
       /* Print styles for "Plain Excel Table Form" */

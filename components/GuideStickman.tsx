@@ -6,58 +6,68 @@ export const GuideStickman: React.FC = () => {
 
   return (
     <>
-      {/* Floating Stickman Trigger */}
-      <div 
-        className={`fixed bottom-6 right-6 z-40 cursor-pointer transition-transform duration-300 hover:scale-110 no-print ${isOpen ? 'scale-0' : 'scale-100'}`}
-        onClick={() => setIsOpen(true)}
-        title="Click for Help"
-      >
-        <div className="relative group animate-float">
-          {/* Unified SVG for Stickman + Flag to ensure perfect alignment */}
-          <svg width="70" height="85" viewBox="0 0 100 120" className="drop-shadow-lg overflow-visible">
-             
-             {/* Flag Group - Animated Sway */}
-             {/* Origin is at the hand holding the pole (30, 70) */}
-             <g className="origin-[30px_70px] animate-wave-flag">
-                 {/* Pole */}
-                 <line x1="30" y1="70" x2="30" y2="5" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
-                 
-                 {/* Flag Cloth */}
-                 <path d="M 30 5 L 85 5 C 85 5 80 20 85 35 L 30 35 Z" className="fill-indigo-600 shadow-sm" />
-                 <text x="36" y="24" className="fill-white text-[11px] font-bold tracking-wider font-sans select-none">GUIDE</text>
-             </g>
+      {/* Marching Stickman Trigger Container */}
+      <div className="fixed bottom-0 left-0 w-full h-32 pointer-events-none z-40 overflow-hidden no-print">
+        <div 
+          className={`absolute bottom-4 pause-on-hover animate-march cursor-pointer pointer-events-auto transition-opacity duration-300 ${isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          onClick={() => setIsOpen(true)}
+          title="Click for Help"
+        >
+          {/* Bobbing Body Container */}
+          <div className="animate-bob">
+            {/* Unified SVG for Stickman + Flag */}
+            <svg width="70" height="90" viewBox="0 0 100 120" className="drop-shadow-lg overflow-visible">
+              
+              {/* Flag Group - Animated Sway */}
+              <g className="origin-[30px_70px] animate-wave-flag">
+                  {/* Pole */}
+                  <line x1="30" y1="70" x2="30" y2="5" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+                  
+                  {/* Flag Cloth */}
+                  <path d="M 30 5 L 85 5 C 85 5 80 20 85 35 L 30 35 Z" className="fill-indigo-600 shadow-sm" />
+                  <text x="36" y="24" className="fill-white text-[11px] font-bold tracking-wider font-sans select-none">GUIDE</text>
+              </g>
 
-             {/* Stickman Body */}
-             
-             {/* Arm holding flag (Left side of svg) */}
-             {/* Shoulder (60, 80) -> Hand (30, 70) */}
-             <line x1="60" y1="80" x2="30" y2="70" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+              {/* Legs - Animated Walking */}
+              {/* Left Leg (Background) */}
+              <g className="origin-[60px_95px] animate-leg-delayed">
+                <line x1="60" y1="95" x2="60" y2="120" className="stroke-slate-700 dark:stroke-slate-300 stroke-[3]" strokeLinecap="round" />
+                {/* Foot */}
+                <line x1="60" y1="120" x2="54" y2="120" className="stroke-slate-700 dark:stroke-slate-300 stroke-[3]" strokeLinecap="round" />
+              </g>
 
-             {/* Legs */}
-             <line x1="60" y1="95" x2="48" y2="115" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
-             <line x1="60" y1="95" x2="72" y2="115" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+              {/* Stickman Body - Static relative to bob */}
+              {/* Torso */}
+              <line x1="60" y1="75" x2="60" y2="95" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
 
-             {/* Torso */}
-             <line x1="60" y1="75" x2="60" y2="95" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+              {/* Right Leg (Foreground) */}
+              <g className="origin-[60px_95px] animate-leg">
+                <line x1="60" y1="95" x2="60" y2="120" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+                {/* Foot */}
+                <line x1="60" y1="120" x2="54" y2="120" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+              </g>
 
-             {/* Head */}
-             <circle cx="60" cy="65" r="10" className="fill-white dark:fill-slate-800 stroke-slate-800 dark:stroke-slate-200 stroke-[3]" />
-             
-             {/* Face Features */}
-             <g className="fill-slate-800 dark:fill-slate-200">
-               <circle cx="57" cy="63" r="1" />
-               <circle cx="63" cy="63" r="1" />
-             </g>
-             <path d="M 57 68 Q 60 71 63 68" fill="none" className="stroke-slate-800 dark:stroke-slate-200 stroke-[2]" strokeLinecap="round" />
-             
-             {/* Waving Arm (Right side of svg) */}
-             {/* Shoulder (60, 80) -> Hand (85, 65) */}
-             <g className="origin-[60px_80px] animate-wave-arm">
-                <line x1="60" y1="80" x2="85" y2="65" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
-                <circle cx="85" cy="65" r="3" className="fill-indigo-500" />
-             </g>
+              {/* Arm holding flag (Left side) */}
+              <line x1="60" y1="80" x2="30" y2="70" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
 
-          </svg>
+              {/* Head */}
+              <circle cx="60" cy="65" r="10" className="fill-white dark:fill-slate-800 stroke-slate-800 dark:stroke-slate-200 stroke-[3]" />
+              
+              {/* Face Features */}
+              <g className="fill-slate-800 dark:fill-slate-200">
+                <circle cx="57" cy="63" r="1" />
+                <circle cx="63" cy="63" r="1" />
+              </g>
+              <path d="M 57 68 Q 60 71 63 68" fill="none" className="stroke-slate-800 dark:stroke-slate-200 stroke-[2]" strokeLinecap="round" />
+              
+              {/* Waving Arm (Right side) */}
+              <g className="origin-[60px_80px] animate-wave-arm">
+                  <line x1="60" y1="80" x2="85" y2="65" className="stroke-slate-800 dark:stroke-slate-200 stroke-[3]" strokeLinecap="round" />
+                  <circle cx="85" cy="65" r="3" className="fill-indigo-500" />
+              </g>
+
+            </svg>
+          </div>
         </div>
       </div>
 
