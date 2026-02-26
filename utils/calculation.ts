@@ -46,6 +46,7 @@ export const calculateRowResult = (row: RowData): number => {
   const taxPercent = Number(row.taxPercent) || 0;
   const commission = Number(row.commission) || 0;
   const freight = Number(row.freight) || 0;
+  const freight2 = Number(row.freight2) || 0;
 
   // Calculate the tax deduction part based on specific order of operations
 
@@ -53,9 +54,9 @@ export const calculateRowResult = (row: RowData): number => {
   const taxDeduction = first * (taxPercent / 100);
   const answer  = first + taxDeduction
 
-  const result = (answer - commission) + freight;
+  const result = (answer - commission) + freight + freight2;
 
-  return Number(result.toFixed(2));
+  return Number(result.toFixed(4));
 };
 
 export const evaluateFormula = (formula: string): number | null => {

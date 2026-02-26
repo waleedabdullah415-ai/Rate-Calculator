@@ -5,6 +5,7 @@ export interface RowData {
   taxPercent: number | '';
   commission: number | string;
   freight: number | '';
+  freight2: number | '';
 }
 
 export interface CommissionSettings {
@@ -18,4 +19,6 @@ export interface PanelData {
   rows: RowData[];
   commissionFormula?: string;
   commissionSettings?: CommissionSettings;
+  freightName?: string;
+  freight2Name?: string;
 }

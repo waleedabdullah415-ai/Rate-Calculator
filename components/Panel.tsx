@@ -29,7 +29,8 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
       discount: '',
       taxPercent: '',
       commission: '',
-      freight: ''
+      freight: '',
+      freight2: ''
     };
     onUpdatePanel(panel.id, { ...panel, rows: [...panel.rows, newRow] });
   };
@@ -125,20 +126,21 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
   };
 
   const handleCopy = async () => {
-    const headers = ['Basic Rate', 'Discount', 'Tax %', 'Commission', 'Freight', 'Result'];
+    const headers = ['Basic Rate', 'Discount', 'Tax %', 'Commission', panel.freightName || 'Freight', panel.freight2Name || 'Freight 2', 'Result'];
     
     // Construct Excel-friendly TSV format
     let tsvContent = `Panel: ${panel.name}\n\n`;
     tsvContent += headers.join('\t') + '\n';
     
     panel.rows.forEach(row => {
-      const result = calculateRowResult(row).toFixed(2);
+      const result = calculateRowResult(row);
       const rowData = [
         row.basicRate === '' ? '' : row.basicRate,
         row.discount === '' ? '' : row.discount,
         row.taxPercent === '' ? '' : row.taxPercent,
         row.commission === '' ? '' : row.commission,
         row.freight === '' ? '' : row.freight,
+        row.freight2 === '' ? '' : row.freight2,
         result
       ];
       tsvContent += rowData.join('\t') + '\n';
@@ -230,7 +232,18 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
           <thead className="bg-slate-50 dark:bg-slate-900/50 text-xs uppercase font-medium text-slate-500 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700">Basic Rate</th>
-              <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700">Discount</th>
+              <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700 group">
+                <div className="flex items-center gap-1">
+                  Discount
+                  <button 
+                    onClick={() => fillColumn('discount')}
+                    className="opacity-0 group-hover:opacity-100 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-opacity p-0.5 no-print"
+                    title="Fill empty cells with first row value"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                </div>
+              </th>
               <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700 group">
                 <div className="flex items-center gap-1">
                   Tax %
@@ -261,7 +274,42 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
                   </button>
                 </div>
               </th>
-              <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700">Freight</th>
+              <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700 group">
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    value={panel.freightName || 'Freight'}
+                    onChange={(e) => onUpdatePanel(panel.id, { ...panel, freightName: e.target.value })}
+                    className="bg-transparent text-xs uppercase font-medium text-slate-500 dark:text-slate-400 focus:outline-none focus:border-b focus:border-indigo-500 w-full"
+                    placeholder="Freight"
+                  />
+                  <button 
+                    onClick={() => fillColumn('freight')}
+                    className="opacity-0 group-hover:opacity-100 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-opacity p-0.5 no-print"
+                    title="Fill empty cells with first row value"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                </div>
+              </th>
+              <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700 group">
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    value={panel.freight2Name || 'Freight 2'}
+                    onChange={(e) => onUpdatePanel(panel.id, { ...panel, freight2Name: e.target.value })}
+                    className="bg-transparent text-xs uppercase font-medium text-slate-500 dark:text-slate-400 focus:outline-none focus:border-b focus:border-indigo-500 w-full"
+                    placeholder="Freight 2"
+                  />
+                  <button 
+                    onClick={() => fillColumn('freight2')}
+                    className="opacity-0 group-hover:opacity-100 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-opacity p-0.5 no-print"
+                    title="Fill empty cells with first row value"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                </div>
+              </th>
               <th className="px-4 py-2 min-w-[120px] border border-slate-200 dark:border-slate-700 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-bold result-cell">Result</th>
               <th className="px-2 py-2 w-10 border border-slate-200 dark:border-slate-700 no-print"></th>
             </tr>
@@ -282,7 +330,7 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
                 <td className="px-2 py-1 border border-slate-200 dark:border-slate-700">
                   <input
                     type="number"
-                    value={row.discount}
+                    value={row.discount ?? ''}
                     onKeyDown={handleKeyDown}
                     onChange={(e) => updateRow(row.id, 'discount', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="0.00"
@@ -314,15 +362,25 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
                 <td className="px-2 py-1 border border-slate-200 dark:border-slate-700">
                   <input
                     type="number"
-                    value={row.freight}
+                    value={row.freight ?? ''}
                     onKeyDown={handleKeyDown}
                     onChange={(e) => updateRow(row.id, 'freight', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="0.00"
                     className="w-full px-2 py-1 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 outline-none transition-all bg-transparent dark:text-slate-200 placeholder-slate-300 dark:placeholder-slate-600"
                   />
                 </td>
+                <td className="px-2 py-1 border border-slate-200 dark:border-slate-700">
+                  <input
+                    type="number"
+                    value={row.freight2 ?? ''}
+                    onKeyDown={handleKeyDown}
+                    onChange={(e) => updateRow(row.id, 'freight2', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    placeholder="0.00"
+                    className="w-full px-2 py-1 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 outline-none transition-all bg-transparent dark:text-slate-200 placeholder-slate-300 dark:placeholder-slate-600"
+                  />
+                </td>
                 <td className="px-4 py-1 font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50/30 dark:bg-indigo-900/20 border border-slate-200 dark:border-slate-700 result-cell">
-                  {calculateRowResult(row).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {calculateRowResult(row).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                 </td>
                 <td className="px-2 py-1 text-center border border-slate-200 dark:border-slate-700 no-print">
                   <button
@@ -337,7 +395,7 @@ export const Panel: React.FC<PanelProps> = ({ panel, onUpdatePanel, onDeletePane
             ))}
             {panel.rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-sm border border-slate-200 dark:border-slate-700">
+                <td colSpan={8} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-sm border border-slate-200 dark:border-slate-700">
                   No rows yet. Add a row to start calculating.
                 </td>
               </tr>

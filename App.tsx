@@ -7,6 +7,7 @@ import { generateId } from './utils/calculation';
 
 const STORAGE_KEY = 'rate-calc-pro-v1';
 const THEME_KEY = 'rate-calc-theme';
+const SCALE_KEY = 'rate-calc-scale';
 
 const App: React.FC = () => {
   const [panels, setPanels] = useState<PanelData[]>([]);
@@ -24,7 +25,18 @@ const App: React.FC = () => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     if (savedData) {
       try {
-        setPanels(JSON.parse(savedData));
+        const parsedData = JSON.parse(savedData);
+        // Ensure old data has new fields
+        const upgradedData = parsedData.map((panel: any) => ({
+          ...panel,
+          freightName: panel.freightName || 'Freight',
+          freight2Name: panel.freight2Name || 'Freight 2',
+          rows: panel.rows.map((row: any) => ({
+            ...row,
+            freight2: row.freight2 ?? ''
+          }))
+        }));
+        setPanels(upgradedData);
       } catch (e) {
         console.error("Failed to parse saved data", e);
         initializeDefault();
@@ -41,6 +53,12 @@ const App: React.FC = () => {
       setIsDark(true);
     }
 
+    // Load Scale
+    const savedScale = localStorage.getItem(SCALE_KEY);
+    if (savedScale) {
+      setUiScale(parseFloat(savedScale));
+    }
+
     setLoaded(true);
   }, []);
 
@@ -50,6 +68,13 @@ const App: React.FC = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(panels));
     }
   }, [panels, loaded]);
+
+  // Save Scale to local storage
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem(SCALE_KEY, uiScale.toString());
+    }
+  }, [uiScale, loaded]);
 
   // Handle Theme Changes
   useEffect(() => {
@@ -84,8 +109,10 @@ const App: React.FC = () => {
     const defaultPanel: PanelData = {
       id: generateId(),
       name: 'General Rates',
+      freightName: 'Freight',
+      freight2Name: 'Freight 2',
       rows: [
-        { id: generateId(), basicRate: 100, discount: 10, taxPercent: 5, commission: 2, freight: 5 }
+        { id: generateId(), basicRate: 100, discount: 10, taxPercent: 5, commission: 2, freight: 5, freight2: 0 }
       ],
       commissionSettings: { rate1: 1.5, rate2: 12 }
     };
@@ -96,6 +123,8 @@ const App: React.FC = () => {
     const newPanel: PanelData = {
       id: generateId(),
       name: `New Panel ${panels.length + 1}`,
+      freightName: 'Freight',
+      freight2Name: 'Freight 2',
       rows: [],
       commissionSettings: { rate1: 1.5, rate2: 12 }
     };
@@ -212,7 +241,7 @@ const App: React.FC = () => {
           <div>
             <p className="font-semibold mb-1">Calculation Formula</p>
             <p className="font-mono text-xs opacity-90">
-              Result = (Basic Rate - Discount) + Tax - Commission + Freight
+              Result = (Basic Rate - Discount) + Tax - Commission + Freight + Freight 2
             </p>
           </div>
         </div>
